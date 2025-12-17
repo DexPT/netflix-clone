@@ -1,17 +1,34 @@
 "use client";
 
 import { Input } from "@/shared/ui/Input";
+import axios from "axios";
 import Link from "next/link";
 import { useState } from "react";
 import { BsGithub } from "react-icons/bs";
 import { FcGoogle } from "react-icons/fc";
+import { toast } from "sonner";
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignUp = () => {};
+  const handleSignUp = async () => {
+    if (!name || !email || !password) {
+      toast.error("All fields are required");
+      return;
+    }
+
+    try {
+      await axios.post("/api/register", {
+        name,
+        email,
+        password,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center bg-black loginContainer">

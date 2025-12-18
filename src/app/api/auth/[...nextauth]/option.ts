@@ -51,6 +51,28 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
   ],
+  callbacks: {
+    async signIn({ user }) {
+      try {
+        await connectToDB();
+
+        const existingUser = await User.findOne({ email: user.email });
+
+        if (!existingUser) {
+          await User.create({
+            email: user.email,
+            name: user.name,
+            image: user.image,
+          });
+        }
+
+        return true;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
+  },
   pages: {
     signIn: "/login",
   },

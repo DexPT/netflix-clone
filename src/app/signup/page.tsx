@@ -91,7 +91,10 @@ const SignUp = () => {
             className="cursor-pointer w-10 h-10"
             onClick={() => signIn("google")}
           />
-          <BsGithub className="cursor-pointer w-10 h-10" />
+          <BsGithub
+            className="cursor-pointer w-10 h-10"
+            onClick={() => signIn("github")}
+          />
         </div>
         <div>
           <span className="text-[#ffffffb3] text-base font-normal">

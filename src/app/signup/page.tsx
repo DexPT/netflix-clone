@@ -2,7 +2,9 @@
 
 import { Input } from "@/shared/ui/Input";
 import axios from "axios";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BsGithub } from "react-icons/bs";
 import { FcGoogle } from "react-icons/fc";
@@ -12,6 +14,27 @@ const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    try {
+      const response = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: "/",
+      });
+
+      if (!response?.ok) {
+        toast.error(response?.error);
+      }
+
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSignUp = async () => {
     if (!name || !email || !password) {
@@ -25,6 +48,7 @@ const SignUp = () => {
         email,
         password,
       });
+      handleLogin();
     } catch (error) {
       console.error(error);
     }

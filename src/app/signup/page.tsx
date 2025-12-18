@@ -87,7 +87,10 @@ const SignUp = () => {
         </button>
         <p className="text-base text-[#ffffffb3] text-center ">OR</p>
         <div className="flex items-center justify-center gap-4">
-          <FcGoogle className="cursor-pointer w-10 h-10" />
+          <FcGoogle
+            className="cursor-pointer w-10 h-10"
+            onClick={() => signIn("google")}
+          />
           <BsGithub className="cursor-pointer w-10 h-10" />
         </div>
         <div>

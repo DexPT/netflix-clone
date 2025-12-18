@@ -30,7 +30,7 @@ const SignUp = () => {
         toast.error(response?.error);
       }
 
-      router.push("/");
+      router.push("/profiles");
     } catch (error) {
       console.log(error);
     }
@@ -89,11 +89,11 @@ const SignUp = () => {
         <div className="flex items-center justify-center gap-4">
           <FcGoogle
             className="cursor-pointer w-10 h-10"
-            onClick={() => signIn("google")}
+            onClick={() => signIn("google", { callbackUrl: "/profiles" })}
           />
           <BsGithub
             className="cursor-pointer w-10 h-10"
-            onClick={() => signIn("github")}
+            onClick={() => signIn("github", { callbackUrl: "/profiles" })}
           />
         </div>
         <div>

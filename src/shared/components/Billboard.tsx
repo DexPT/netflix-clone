@@ -77,7 +77,13 @@ const Billboard = () => {
           </button>
         </div>
       </div>
-      {showInfoModal ? <MovieInfoModal /> : null}
+      {showInfoModal ? (
+        <MovieInfoModal
+          showInfoModal={showInfoModal}
+          setShowInfoModal={setShowInfoModal}
+          movieData={randomMovie}
+        />
+      ) : null}
     </div>
   );
 };

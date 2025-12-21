@@ -1,7 +1,9 @@
+import useUser from "@/stores/users.store";
 import { IMovie } from "@/types/movie.types";
+import axios from "axios";
 import clsx from "clsx";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const MoviePopup = ({
   movie,
@@ -14,11 +16,34 @@ const MoviePopup = ({
 
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
+  const { user, updateUser, updateFavorites } = useUser();
+
+  const isFavourite = useMemo(() => {
+    return user?.favorites?.includes(movie._id);
+  }, [user, movie]);
+
   const handlePlayButtonClick = () => {
     if (videoRef.current) {
       setIsVideoPlaying(true);
       videoRef.current.play();
       videoRef.current.requestFullscreen();
+    }
+  };
+
+  const toggleFavourites = async (movieId: string) => {
+    try {
+      if (isFavourite) {
+        await axios.delete("/api/favourite", {
+          data: { movieId },
+        });
+      } else {
+        await axios.post("/api/favourite", { movieId });
+      }
+
+      updateUser();
+      updateFavorites();
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -64,9 +89,14 @@ const MoviePopup = ({
             </button>
             <button
               className="bg-[#2a2a2a] border-2 rounded-full p-2 border-[#ffffff80] cursor-pointer"
-              onClick={handlePlayButtonClick}
+              onClick={() => toggleFavourites(movie._id)}
             >
-              <Image src="/assets/plus.svg" width={20} height={20} alt="Add" />
+              <Image
+                src={`/assets/${isFavourite ? "white-tick" : "plus"}.svg`}
+                width={20}
+                height={20}
+                alt="Add"
+              />
             </button>
           </div>
           <button

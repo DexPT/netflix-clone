@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     await User.updateOne(
       { email: currentUser.email },
-      { $addToSet: { favourites: movieId } }
+      { $addToSet: { favorites: movieId } }
     );
 
     return NextResponse.json(
@@ -55,7 +55,12 @@ export async function DELETE(req: NextRequest) {
     }
     await User.updateOne(
       { email: currentUser.email },
-      { $pull: { favourites: movieId } }
+      { $pull: { favorites: movieId } }
+    );
+
+    return NextResponse.json(
+      { message: "Movie removed from favourites" },
+      { status: 200 }
     );
   } catch (error) {
     console.log(error);

@@ -1,8 +1,10 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Dialog, DialogContent, DialogTitle } from "../ui/Dialog";
 import { IMovie } from "@/types/movie.types";
 import Image from "next/image";
 import { Dot } from "lucide-react";
+import useUser from "@/stores/users.store";
+import axios from "axios";
 
 interface ImovieInfoModalProps {
   showInfoModal: boolean;
@@ -16,12 +18,35 @@ const MovieInfoModal = ({
   movieData,
 }: ImovieInfoModalProps) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const { user, updateUser, updateFavorites } = useUser();
+
+  const isFavourite = useMemo(() => {
+    return user?.favorites?.includes(movieData?._id || "");
+  }, [user, movieData]);
 
   const handlePlayButtonClick = () => {
     if (videoRef.current) {
       videoRef.current.requestFullscreen();
     }
   };
+
+  const toggleFavourites = async () => {
+    try {
+      if (isFavourite) {
+        await axios.delete("/api/favourite", {
+          data: { movieId: movieData?._id },
+        });
+      } else {
+        await axios.post("/api/favourite", { movieId: movieData?._id });
+      }
+
+      updateUser();
+      updateFavorites();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Dialog open={showInfoModal} onOpenChange={() => setShowInfoModal(false)}>
       <DialogTitle></DialogTitle>
@@ -55,9 +80,12 @@ const MovieInfoModal = ({
                   />
                   Play
                 </button>
-                <button className="bg-transparent border-2 rounded-full p-2 border-white cursor-pointer">
+                <button
+                  className="bg-transparent border-2 rounded-full p-2 border-white cursor-pointer"
+                  onClick={toggleFavourites}
+                >
                   <Image
-                    src="/assets/plus.svg"
+                    src={`/assets/${isFavourite ? "white-tick" : "plus"}.svg`}
                     width={20}
                     height={20}
                     alt="Add"

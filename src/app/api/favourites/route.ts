@@ -10,10 +10,10 @@ export async function GET() {
     await connectToDB();
 
     const user = await User.findOne({ email: currentUser.email }).populate(
-      "favourites"
+      "favorites"
     );
 
-    return NextResponse.json({ favourites: user.favourites }, { status: 200 });
+    return NextResponse.json({ favourites: user.favorites }, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(

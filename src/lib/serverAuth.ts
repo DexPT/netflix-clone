@@ -17,7 +17,7 @@ const serverAuth = async () => {
       throw new Error("Unauthorized");
     }
 
-    return currentUser;
+    return { currentUser };
   } catch {
     throw new Error("Unauthorized");
   }

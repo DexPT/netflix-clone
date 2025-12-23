@@ -6,7 +6,7 @@ export async function GET() {
     const { currentUser } = await serverAuth();
 
     return NextResponse.json({ currentUser }, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

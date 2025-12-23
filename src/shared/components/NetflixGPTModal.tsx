@@ -98,7 +98,7 @@ const NetflixGPTModal = ({
       const output = JSON.parse(cleanedText);
 
       setRecommendedMovie(output);
-      /* setIsRecommendedMovieModalOpen(true); */
+      setIsRecommendedMovieModalOpen(true);
     } catch (error) {
       console.log(error);
     }

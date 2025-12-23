@@ -50,7 +50,7 @@ const MovieInfoModal = ({
   return (
     <Dialog open={showInfoModal} onOpenChange={() => setShowInfoModal(false)}>
       <DialogTitle></DialogTitle>
-      <DialogContent className="bg-[#181818] border-none min-w-[700px] p-0">
+      <DialogContent className="bg-[#181818] border-none min-w-[700px] popupShadow p-0">
         <div className="flex flex-col gap-4 w-full">
           <div className="relative">
             <video

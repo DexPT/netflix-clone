@@ -51,6 +51,7 @@ const MoviePopup = ({
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement) {
         setIsVideoPlaying(false);
+        videoRef.current?.pause();
         videoRef.current = null;
       }
     };
@@ -63,7 +64,7 @@ const MoviePopup = ({
   }, []);
 
   return (
-    <div className="absolute -left-8 w-80 z-10 -top-16 rounded-md text-base transform scale-75 hover:scale-100 hover:-translate-y-6 transition-transform duration-300 ease-in-out">
+    <div className="absolute -left-8 w-80 z-10 -top-16 rounded-md text-base transform scale-75 hover:scale-100 hover:-translate-y-6 transition-transform duration-300 ease-in-out popupShadow">
       <video
         ref={videoRef}
         src={movie.videoUrl}

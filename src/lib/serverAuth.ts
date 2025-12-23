@@ -11,6 +11,7 @@ const serverAuth = async () => {
       throw new Error("Unauthorized");
     }
 
+    await connectToDB();
     const currentUser = await User.findOne({ email: session.user?.email });
 
     if (!currentUser) {

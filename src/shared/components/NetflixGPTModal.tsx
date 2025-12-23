@@ -8,10 +8,14 @@ import {
   DialogFooter,
 } from "../ui/Dialog";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GENRES, MOODS } from "@/utils/constants";
 import { Badge } from "../ui/Badge";
 import { Slider } from "../ui/Slider";
+import { GoogleGenAI } from "@google/genai";
+import { IMovie, IRecommendedMovie } from "@/types/movie.types";
+import axios from "axios";
+import RecommendedMovieModal from "./RecommendedMovieModal";
 
 interface INetflixGPTModalProps {
   isNetflixGPTModalOpen: boolean;
@@ -26,6 +30,11 @@ const NetflixGPTModal = ({
   const [rating, setRating] = useState<number[]>([6]);
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [movies, setMovies] = useState<IMovie[]>([]);
+  const [recommendedMovie, setRecommendedMovie] =
+    useState<IRecommendedMovie | null>(null);
+  const [isRecommendedMovieModalOpen, setIsRecommendedMovieModalOpen] =
+    useState(false);
 
   const toggleMood = (mood: string) => {
     setSelectedMoods((prev) =>
@@ -38,6 +47,75 @@ const NetflixGPTModal = ({
       prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]
     );
   };
+
+  const handleRecommendMovie = async () => {
+    try {
+      const ai = new GoogleGenAI({
+        apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+      });
+
+      const model = "gemini-2.5-flash-lite";
+
+      const preferences = {
+        genre: selectedGenres,
+        minDuration: duration[0],
+        minRating: rating[0],
+        mood: selectedMoods,
+      };
+
+      const contents = [
+        {
+          role: "user",
+          parts: [
+            {
+              text: `You are a movie recommendation assistant. Here is a list of movies: ${JSON.stringify(
+                movies,
+                null,
+                2
+              )}
+              User preferences: ${JSON.stringify(preferences, null, 2)}
+              Task:
+              - Recommend the best movie(s) from the list.
+              - Explain briefly why you chose it.
+              - Return response in JSON with keys: "recommendation and "reason".
+
+              `,
+            },
+          ],
+        },
+      ];
+      const response = await ai.models.generateContent({
+        model,
+        contents,
+      });
+
+      const text =
+        response?.candidates?.[0]?.content?.parts
+          ?.map((part) => part.text)
+          .join("\n") || "No response";
+
+      const cleanedText = text.replace(/```json\s*|\s*```/g, "");
+      const output = JSON.parse(cleanedText);
+
+      setRecommendedMovie(output);
+      /* setIsRecommendedMovieModalOpen(true); */
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchMovies = async () => {
+    try {
+      const { data } = await axios.get("/api/movies");
+      setMovies(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMovies();
+  }, []);
 
   return (
     <>
@@ -127,15 +205,29 @@ const NetflixGPTModal = ({
             </div>
           </div>
           <DialogFooter className="flex gap-6 mt-6">
-            <button className="cursor-pointer bg-[#141414] font-medium text-sm py-2 px-4 border border-[#262626] rounded-md">
+            <button
+              className="cursor-pointer bg-[#141414] font-medium text-sm py-2 px-4 border border-[#262626] rounded-md"
+              onClick={() => setIsNetflixGPTModalOpen(false)}
+            >
               Cancel
             </button>
-            <button className="cursor-pointer bg-[#ff0000] glow-red font-medium text-sm py-2 px-4 rounded-[10px]">
+            <button
+              className="cursor-pointer bg-[#ff0000] glow-red font-medium text-sm py-2 px-4 rounded-[10px]"
+              onClick={handleRecommendMovie}
+            >
               Generate Recommendations
             </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {isRecommendedMovieModalOpen ? (
+        <RecommendedMovieModal
+          isRecommendedMovieModalOpen={isRecommendedMovieModalOpen}
+          setIsRecommendedMovieModalOpen={setIsRecommendedMovieModalOpen}
+          recommendedMovie={recommendedMovie}
+          movies={movies}
+        />
+      ) : null}
     </>
   );
 };

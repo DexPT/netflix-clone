@@ -63,7 +63,7 @@ const Navbar = () => {
           >
             <Sparkle className="text-white" />
           </button>
-          <Image
+          {/*    <Image
             src="/assets/search.svg"
             className="cursor-pointer"
             width={24}
@@ -76,7 +76,7 @@ const Navbar = () => {
             width={24}
             height={24}
             alt="Notification"
-          />
+          /> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="text-white cursor-pointer">

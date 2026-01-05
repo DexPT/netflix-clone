@@ -9,6 +9,7 @@ const Movies = ({ movies, label }: { movies: IMovie[]; label: string }) => {
   const [movieData, setMovieData] = useState<IMovie | null>(null);
   const [movieId, setMovieId] = useState<string | null>(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [isPopupLocked, setIsPopupLocked] = useState(false);
 
   const handleMouseEnter = (movie: IMovie, movieId: string) => {
     setMovieData(movie);
@@ -16,7 +17,9 @@ const Movies = ({ movies, label }: { movies: IMovie[]; label: string }) => {
   };
 
   const handleMouseLeave = () => {
-    setMovieId(null);
+    if (!isPopupLocked) {
+      setMovieId(null);
+    }
   };
 
   const handleOpenInfoModal = () => {
@@ -50,6 +53,7 @@ const Movies = ({ movies, label }: { movies: IMovie[]; label: string }) => {
                 <MoviePopup
                   movie={movie}
                   handleOpenInfoModal={handleOpenInfoModal}
+                  setPopupLock={setIsPopupLocked}
                 />
               ) : null}
             </div>

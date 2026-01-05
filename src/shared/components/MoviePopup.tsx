@@ -8,9 +8,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 const MoviePopup = ({
   movie,
   handleOpenInfoModal,
+  setPopupLock,
 }: {
   movie: IMovie;
   handleOpenInfoModal: () => void;
+  setPopupLock: (isLocked: boolean) => void;
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -24,6 +26,7 @@ const MoviePopup = ({
 
   const handlePlayButtonClick = () => {
     if (videoRef.current) {
+      setPopupLock(true);
       setIsVideoPlaying(true);
       videoRef.current.play();
       videoRef.current.requestFullscreen();
@@ -50,9 +53,9 @@ const MoviePopup = ({
   useEffect(() => {
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement) {
+        setPopupLock(false);
         setIsVideoPlaying(false);
         videoRef.current?.pause();
-        videoRef.current = null;
       }
     };
 
@@ -61,7 +64,7 @@ const MoviePopup = ({
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
-  }, []);
+  }, [setPopupLock]);
 
   return (
     <div className="absolute -left-8 w-80 z-10 -top-16 rounded-md text-base transform scale-75 hover:scale-100 hover:-translate-y-6 transition-transform duration-300 ease-in-out popupShadow">
